@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!--Meta tags-->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--Meta tags PWA-->
+    <meta name="theme-color" content="#333333">
+    <meta name="MobileOptimized" content="width">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="app-mobile-web-app-capable" content="yes">
+    <meta name="app-mobile-web-app-status-bar-style" content="black-translucent">
+    <!--El archivo manifest (manifiesto) sera quien configure el nombre de nuestra aplicacion, la version de la
+    aplicacion, la ruta principal de toda la aplicacion, configurar cadenas de textos largos a shortName (como
+    en Android), etc.-->
+    <!--manifest-->
+    <link rel="manifest" href="manifest.json" />
+    <!--Icons-->
+    <link rel="shorcut icon" href="favicon.png" type="image/png">
+
+    <link rel="apple-touch-icon" href="favicon.png" type="image/png">
+    <link rel="apple-touch-startup-image" href="favicon.png" type="image/png">
+
+    <!--Title-->
+    <title>React CDN</title>
+    <!--Scripts-->
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+
+    <!--Babel nos permite ejecutar codigo JSX, el cual es una mezcla de JavaScript y XML. 
+        Para que esto funcione, los scripts tienen que ser interpretados como type="text/babel", ya que por defecto
+        HTML interpreta a los scripts como type="text/javascript"-->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!--Styles-->
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <h1>Hola mundo desde react</h1>
+
+    <!--Para utilizar React, es necesario crear un DIV, en donde se renderizara todos los componenetes de React
+        Nota: Es necesario que este DIV tenga algun id, el que sea, pero por convencion por defecto es root.-->
+    <div id="root"></div>
+    <div id="rootSecundario"></div>
+    <div id="root3"></div>
+    <div id="root4"></div>
+
+    <!--Por defecto el type del script es "text/javascript"-->
+    <script>
+        /*React DOM funciona como un DOM virtual, por lo que los renderizados son en tiempo de ejecucion.*/
+        
+        /*Mostramos los componentes de React*/
+        console.log(React);
+
+        /*Mostramos los componentes de React Dom*/
+        console.log(ReactDOM);
+
+        /*Para renderizar un elemento en React, se hace de la siguiente manera:
+        * 1. Hacemos referencia al DOM con ReactDOM.
+        * 2. Hacemos referencia a la funcion de renderizar de ReactDOM (ReactDOM.render).
+        * 3. Creamos o hacemos referencia a algun elemento del DOM. Para crear un elemento
+        *    seria; React.createElement("<Tipo de etiqueta>",
+        *                                <Objeto con propiedades, para agregar clases, atributos, etc (conocido en react como props))>,
+        *                               "<Hijo del elemento, puede ser un simple string u otra etiqueta o elemento>",
+        *                               "<Hijo del elemento, puede ser un simple string u otra etiqueta o elemento>",
+        *                               "<Hijo del elemento, puede ser un simple string u otra etiqueta o elemento>",
+        *                               ...etc
+        * 4. Hacer referencia hacia que etiqueta vamos a renderizar el elemento.
+        *    React.DOM.render("<Elemento o etiqueta a renderizar>", "<Etiqueta padre (o contenedora) para el renderizado>").
+        */
+    
+        /*Nota: React.createElement permite anidar mas React.createElement.*/
+        /*React previene ataques XSS, por lo que los string que le entregemos al .createElement seran strings literales.*/
+        ReactDOM.render(React.createElement("div",{},
+                                                    React.createElement("b",{ className: "lol"},"Hola react 1"),  //Elementos a renderizar 
+                                                    React.createElement("p",{}, "Hola react 2") 
+        ),document.getElementById("root")); //Contenedor en donde vamos a renderizar el elemento
+    </script>
+
+    <!--Haciendo lo mismo que lo anterior, pero ahora con babel-->
+    <script type="text/babel">
+
+        /*Si hacemos esto sin babel, nos arrojaria error de compilacion, ya que HTML no seria capaz de interpretar
+          el codigo HTML (y tambien XML) que esta dentro del render. 
+          
+          A este tipo de codificacion se le conoce como JSX (JavaScript y XML).*/
+        ReactDOM.render(
+            <ol>
+                <li>Manzana</li>
+                <li>Pera</li>
+            </ol>, document.getElementById("root"));
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /**Forma en que se trabaja antiguamente React
+         * 1. Creamos una clase la cual va a heredar de React.Component
+         * 2. Hacemos referencia a su funcion render(), el cual se hara cargo de 
+         *    ejecutar una funcion return (retornar), el cual su funcion es retornar 
+         *    una etiqueta.
+         * 3. Ejecutar la clase que creamos y que heredaba de React.component dentro de un ReactDOM.render().
+         *    Hay que tener en cuenta que la clase se tiene que ejecutar como etiqueta, no como clase ni 
+         *    objeto. Ejemplo:
+         * 
+         *          React.render(<nombre de la clase></nombre de la clase>, document.getElementById("root"));
+         * 
+         * NOTA: Por convencion, el nombre de la clase empieza con mayuscula, (Como en JAVA o C#).            
+         */
+
+         class Saludo extends React.Component{
+             render(){
+                 const testsuma = 5 + 10;
+                 
+                 //Forma clasica de hacer un return.
+                 //return (<h3>Saludo desde React Legacy. Resultado de testsuma {testsuma}</h3>);
+
+                 //Forma mia de hacer un return
+                 const reactElementSaludo = <h3>Saludo desde React Legacy.</h3>
+                 const reactElementSuma = <h3>Resultado de testsuma {testsuma}.</h3>
+                 const reactElementoCompleto = React.createElement("div", {}, reactElementSaludo, reactElementSuma);
+                 return(reactElementoCompleto);
+             }
+         }
+         //Nota: cada vez que hagamos un render sobre un elemento, (en este caso root) los elementos
+         //hijos seran reemplazados con el nuevo render.
+         ReactDOM.render(<Saludo></Saludo> ,document.getElementById("root")); //->en el render solo muestra el 
+                                                                              //contenido de la clase Saludo.
+
+         //Para evitar esto, utilizamos React.createElement, el cual nos permite colocar multiples etiquetas
+         //dentro de un contenedor padre.
+         const reactElement = React.createElement("div", {}, <ol>
+                <li>Manzana</li>
+                <li>Pera</li>
+            </ol>, <Saludo></Saludo>)
+         ReactDOM.render(reactElement ,document.getElementById("root"));
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /**Forma en la que se trabaja React actualmente
+         * 1. Declaramos una variable con una funcion flecha.
+         * 2. Ejecutamos un return el cual nos devolvera un elemento o etiqueta.
+         * 3. Ejecutamos la variable de la funcion flecha como etiqueta dentro de un ReactDOM.render(). Ejemplo:
+         *          
+         *      React.render(<nombre de la variable con la funcion flecha></nombre de la variable con la funcion flecha>, 
+         *                  document.getElementById("rootSecundario"));    
+        */
+
+        const SaludoModerno = () => {
+
+            const nombre = prompt("Cual es tu nombre?");
+            const saludo = <div>
+                            <h4 class="textoRojo">Saludos {nombre} desde React Moderno.</h4>
+                            <h4 class="textoRojo">Fecha: {new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}.</h4>
+                            <hr/>
+                           </div>;
+            return (saludo);
+        }
+
+        ReactDOM.render(<SaludoModerno></SaludoModerno>, document.querySelector("#rootSecundario"));
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /**Hooks
+         * Los hooks se dividen en dos, el lado izquerdo es el nombre de la variable, y en el lado derecho el tipo 
+         * de hook. El tipo de hook puede ir acompañado por la palabra State, o por el nombre de la variable. Ej
+         * 
+         *      const [Contador, setState <o> setContador] 
+        */
+        const ContadorAux = () => {
+
+            //let num = 0; //->Sin hooks.
+
+            //Con hooks
+            let [num, setNum] = React.useState(0); //React.useState(<Valor inicial>);
+            setInterval(() => {
+                //num++ //-> Sin hook. No cambia el nuevo valor en la pagina. Solo lo muestra por el console.log()
+                setNum(num + 1); //Con hook, cambia el estado y lo muestra en la pagina.
+                console.log(num);
+            },1500);
+
+            return (<p>Contador cada 1500ms : {num}</p>);
+        }
+         
+        
+        ReactDOM.render(React.createElement("div", {}, <SaludoModerno/>, <ContadorAux/>), document.querySelector("#rootSecundario"));
+    </script>
+
+
+    
+    <script type="text/babel" src="components/Contador.js"></script>
+    <script type="text/babel" src="index.js"></script>
+    
+    <!--Forma de saber que serviceWorker existe en el navegador-->
+    <script src="register.js" type="text/javascript"></script>
+</body>
+</html>
